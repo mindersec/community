@@ -1,0 +1,56 @@
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    # 15:00 UTC = 6PM/7PM Eastern Europe, 8AM/9AM Pacific
+    - cron: "0 15 * * *"
+
+jobs:
+  provision_users:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    env:
+      CONFIG_DIRECTORY: "./config/"
+    steps:
+      - name: SetupOpenTofu
+        uses: opentofu/setup-opentofu@12f4debbf681675350b6cd1f0ff8ecfbda62027b # v1.0.4
+
+      - name: Checkout code
+        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
+
+      - name: Load state from artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: provision-user-state
+          path: $CONFIG_DIRECTORY
+          pattern: terraform.tfstate
+
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app_id: ${{ secrets.USER_MANAGEMENT_APP_ID }}
+          private_key: ${{ secrets.USER_MANAGEMENT_PRIVATE_KEY }}
+
+      - name: OpenTofu Apply
+        id: apply
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          set -e
+          cd $CONFIG_DIRECTORY
+
+          tofu init
+          tofu validate -no-color
+          tofu apply -no-color -input=false -auto-approve
+
+      # NOTE: we don't encrypt/decrypt the state file, as it only contains
+      # (public) github memberships.
+      - name: Save state to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: provision-user-state
+          path: $CONFIG_DIRECTORY/terraform.tfstate
