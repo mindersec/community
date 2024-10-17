@@ -1,0 +1,13 @@
+version: v1
+type: profile
+name: mindersec-code-review
+display_name: Enforce mindersec Code Review Standards
+context:
+  provider: github
+alert: "off"
+remediate: "off"
+repository:
+  - type: codeowners
+    def: {}
+  - type: branch_protection
+    def: {}
