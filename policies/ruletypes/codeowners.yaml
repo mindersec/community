@@ -1,0 +1,48 @@
+version: v1
+type: rule-type
+name: codeowners
+severity:
+  value: high
+context:
+  provider: github
+description: Ensure that all mindersec repos have a CODEOWNERS file.
+guidance: |
+  The CODEOWNERS file defines what users are permitted to approve PRs in that
+  repository.  We are using CODEOWNERS to limit code review to maintainers,
+  so that non-maintainer members can manage issues and PRs.  See
+  https://github.com/mindersec/community/issues/5 for background.
+
+  This rule ensures that all repositories have a CODEOWNERS file.
+def:
+  in_entity: repository
+  rule_schema: {}
+  ingest:
+    type: git
+    git:
+      branch: main
+  eval:
+    type: rego
+    rego:
+      type: deny-by-default
+      def: |
+        package minder
+
+        import rego.v1
+
+        default allow := false
+        allow if {
+          file.exists(".github/CODEOWNERS")
+        }
+  remediate:
+    type: pull_request
+    pull_request:
+      title: Add CODEOWNERS file
+      body: |
+        Enforces that all `mindersec` repos have a CODEOWNERS file.
+        See https://github.com/mindersec/community/tree/main/policies/ruletypes/codeowners.yaml
+        for more information.
+      contents:
+        - path: .github/CODEOWNERS
+          content: |
+            # This file is used to define who can approve PRs in this repository.
+            * @mindersec/maintainers
