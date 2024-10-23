@@ -5,7 +5,7 @@ display_name: Enforce mindersec Code Review Standards
 context:
   provider: github
 alert: "off"
-remediate: "off"
+remediate: "on"
 repository:
   - type: codeowners
     def: {}

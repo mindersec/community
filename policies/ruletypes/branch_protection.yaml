@@ -36,8 +36,8 @@ def:
       - ingested:
           def: ".allow_force_pushes.enabled"
         constant: false
-      - ingestion:
-          def: "enforce_admins.enabled"
+      - ingested:
+          def: ".enforce_admins.enabled"
         constant: true
       - ingested:
           def: ".required_pull_request_reviews.required_approving_review_count"
@@ -48,8 +48,8 @@ def:
       - ingested:
           def: ".required_pull_request_reviews.require_code_owner_reviews"
         constant: true
-      - ingestion:
-          def: "required_pull_request_reviews.require_last_push_approval"
+      - ingested:
+          def: ".required_pull_request_reviews.require_last_push_approval"
         constant: true
   # Defines the configuration for remediating the rule
   remediate:
