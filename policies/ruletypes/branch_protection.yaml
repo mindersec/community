@@ -18,6 +18,13 @@ guidance: |
 def:
   in_entity: repository
   rule_schema: {}
+  param_schema:
+    properties:
+      # N.B. the gh_branch_protection remediation type expects this property to exist
+      branch:
+        type: string
+        description: "The name of the branch to protect.  If left empty, the default branch will be used."
+        default: ""
   ingest:
     type: rest
     rest:

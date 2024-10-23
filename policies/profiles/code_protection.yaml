@@ -11,3 +11,6 @@ repository:
     def: {}
   - type: branch_protection
     def: {}
+    # N.B. the gh_branch_protection remediation type expects this property to exist
+    params:
+      branch: "" # Use default for repo
