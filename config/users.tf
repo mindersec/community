@@ -14,6 +14,14 @@ locals {
 
     thelinuxfoundation = { role : "admin" }
   }
+
+  org_members = {
+    dashtangui   = {}
+    dussab       = {}
+    ethomson     = {}
+    msembria     = {}
+    staceypotter = {}
+  }
 }
 
 resource "github_membership" "maintainers" {
@@ -23,13 +31,25 @@ resource "github_membership" "maintainers" {
   role     = each.value.role
 }
 
+resource "github_membership" "org_members" {
+  for_each = local.org_members
+
+  username = each.key
+  role     = "member"
+}
+
+# Folks who helped with the transition need a manual import
 import {
-  to = github_membership.maintainers["evankanderson"]
-  id = "mindersec:evankanderson"
+  to = github_membership.maintainers["dussab"]
+  id = "mindersec:dussab"
 }
 import {
-  to = github_membership.maintainers["JAORMX"]
-  id = "mindersec:JAORMX"
+  to = github_membership.maintainers["ethomson"]
+  id = "mindersec:ethomson"
+}
+import {
+  to = github_membership.maintainers["staceypotter"]
+  id = "mindersec:staceypotter"
 }
 
 resource "github_team" "maintainers" {
