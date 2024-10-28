@@ -40,15 +40,15 @@ resource "github_membership" "org_members" {
 
 # Folks who helped with the transition need a manual import
 import {
-  to = github_membership.maintainers["dussab"]
+  to = github_membership.org_members["dussab"]
   id = "mindersec:dussab"
 }
 import {
-  to = github_membership.maintainers["ethomson"]
+  to = github_membership.org_members["ethomson"]
   id = "mindersec:ethomson"
 }
 import {
-  to = github_membership.maintainers["staceypotter"]
+  to = github_membership.org_members["staceypotter"]
   id = "mindersec:staceypotter"
 }
 
