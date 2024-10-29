@@ -19,7 +19,7 @@ locals {
     dashtangui   = {}
     dussab       = {}
     ethomson     = {}
-    msembria     = {}
+    mesembria    = {}
     staceypotter = {}
   }
 }
@@ -72,4 +72,10 @@ resource "github_team_members" "maintainers" {
       role = replace(local.maintainers[members.key].role, "admin", "maintainer")
     }
   }
+}
+
+// Import the team, because it didn't get stored in terraform state.
+import {
+  to = github_team.maintainers
+  id = "maintainers"
 }
