@@ -11,6 +11,7 @@ locals {
     blkt          = { role : "member" }
     puerco        = { role : "member" }
     Vyom-Yadav    = { role : "member" }
+    teodor-yanev  = { role : "member" }
 
     thelinuxfoundation = { role : "admin" }
   }
