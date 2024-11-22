@@ -2,7 +2,7 @@ locals {
   maintainers = {
     JAORMX        = { role : "admin" }
     jhrozek       = { role : "member" }
-    rdimitrov     = { role : "member" }
+    rdimitrov     = { role : "admin" }
     dmjb          = { role : "member" }
     evankanderson = { role : "admin" }
     eleftherias   = { role : "member" }
