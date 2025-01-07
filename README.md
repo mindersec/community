@@ -46,7 +46,7 @@ the following
 ## Contributing
 
 We welcome contributions to Minder. Please see our
-[Contributing](./CONTRIBUTING.md) guide for more information. Contributors who
+[Contributing](https://github.com/mindersec/minder/blob/main/CONTRIBUTING.md) guide for more information. Contributors who
 participate frequently in pull requests should read the
 [Maintainers](./MAINTAINERS.md) document for the process and expectations of
 acquiring Maintainer permissions.
