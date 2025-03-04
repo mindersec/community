@@ -1,2 +1,6 @@
 # This file is used to define who can approve PRs in this repository.
 * @mindersec/maintainers
+
+# LF Projects would like to approve all governance changes.  See
+# https://github.com/mindersec/minder/pull/4834
+GOVERNANCE.md @thelinuxfoundation
