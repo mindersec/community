@@ -6,8 +6,7 @@ locals {
     dmjb          = { role : "member" }
     evankanderson = { role : "admin" }
     eleftherias   = { role : "member" }
-    yrobla        = { role : "member" }
-    lukehinds     = { role : "admin" }
+    lukehinds     = { role : "member" }
     blkt          = { role : "member" }
     puerco        = { role : "member" }
     Vyom-Yadav    = { role : "member" }
@@ -20,7 +19,6 @@ locals {
     dashtangui   = {}
     dussab       = {}
     ethomson     = {}
-    mesembria    = {}
     staceypotter = {}
   }
 }
