@@ -91,11 +91,7 @@ The current list of maintainers is:
 - @puerco (uServers)
 - @Vyom-Yadav (Canonical)
 
-Assignment of permissions for these maintainers is currently privately managed
-by Stacklok as a matter of circumstance; changes to this list will need a
-Stacker to apply some private automation to grant the privileges, until we find
-a different approach (for example, donation to a foundation, which would have
-their own automation).
+Assignment of permissions for these maintainers is managed via Terraform configuration in [the `config` directory](./config/).
 
 ### Emeritus Maintainers
 
