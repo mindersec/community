@@ -85,10 +85,10 @@ The current list of maintainers is:
 
 - @JAORMX (Stacklok)
 - @rdimitrov (Stacklok)
-- @evankanderson (Stacklok)
+- @evankanderson (Custcodian)
 - @eleftherias (Stacklok)
 - @blkt (Stacklok)
-- @puerco (Stacklok)
+- @puerco (uServers)
 - @Vyom-Yadav (Canonical)
 
 Assignment of permissions for these maintainers is currently privately managed
