@@ -14,9 +14,9 @@ repositories, artifacts, and pull requests. Minder _profiles_ encapsulate a set
 of rules which apply to one or more entity types to enforce supply chain policy.
 
 Minder can be deployed as a Helm chart and provides a CLI tool `minder`.
-Stacklok, also provides a free-for-public-repositories hosted version of Minder
-(at https://api.stacklok.com/). Minder is designed to be extensible, allowing
-users to integrate with their existing tooling and processes.
+[Custcodian](https://custcodian.dev), also provides a free-for-public-repositories
+hosted version of Minder (at https://api.custcodian.dev/). Minder is designed to be
+extensible, allowing users to integrate with their existing tooling and processes.
 
 ## Features
 
@@ -29,7 +29,7 @@ users to integrate with their existing tooling and processes.
   ensure they’re tamper-proof, using the open source project Sigstore.
 - **Dependency management:** Manage dependency security posture by helping
   developers make better choices and enforcing controls. Minder is integrated
-  with [Trusty by Stacklok](https://trustypkg.dev) to enable policy-driven
+  with [OSV](https://osv.dev) to enable policy-driven
   dependency management based on the risk level of dependencies.
 
 # Roadmap
@@ -37,11 +37,11 @@ users to integrate with their existing tooling and processes.
 The Minder community are actively working on new features and improvements for
 Minder.
 
-You can find our roadmap [here](https://minder-docs.stacklok.dev/about/roadmap).
+You can find our roadmap [here](https://mindersec.github.io/about/roadmap).
 
 Should you wish to request or contribute a feature or improvement, please use
 the following
-[issue template](https://github.com/stacklok/minder/issues/new?template=enhancement.yml)
+[issue template](https://github.com/mindersec/minder/issues/new?template=enhancement.yml)
 
 ## Contributing
 
