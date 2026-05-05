@@ -16,10 +16,17 @@ locals {
   }
 
   org_members = {
-    dashtangui   = {}
-    dussab       = {}
-    ethomson     = {}
-    staceypotter = {}
+    dakshhhhh16    = {}
+    dashtangui     = {}
+    DharunMR       = {}
+    dussab         = {}
+    ethomson       = {}
+    Gitjay11       = {}
+    Jaydeep869     = {}
+    kazuhidelee    = {}
+    krrish175-byte = {}
+    sachin9058     = {}
+    staceypotter   = {}
   }
 }
 
