@@ -1,22 +1,16 @@
 locals {
   maintainers = {
-    JAORMX        = { role : "admin" }
-    jhrozek       = { role : "member" }
-    rdimitrov     = { role : "admin" }
-    dmjb          = { role : "member" }
-    evankanderson = { role : "admin" }
-    eleftherias   = { role : "member" }
-    lukehinds     = { role : "member" }
-    blkt          = { role : "member" }
-    puerco        = { role : "member" }
-    Vyom-Yadav    = { role : "member" }
-    teodor-yanev  = { role : "member" }
+    evankanderson  = { role : "admin" }
+    dakshhhhh16    = { role: "member" }
+    krrish175-byte = { role: "member" }
+    JAORMX         = { role : "admin" }
+    rdimitrov      = { role : "admin" }
+    Vyom-Yadav     = { role : "member" }
 
     thelinuxfoundation = { role : "admin" }
   }
 
   org_members = {
-    dakshhhhh16      = {}
     dashtangui       = {}
     DharunMR         = {}
     dussab           = {}
@@ -25,9 +19,15 @@ locals {
     intelligent-ears = {}
     Jaydeep869       = {}
     kazuhidelee      = {}
-    krrish175-byte   = {}
     sachin9058       = {}
     staceypotter     = {}
+    jhrozek          = {}
+    dmjb             = {}
+    eleftherias      = {}
+    lukehinds        = {}
+    blkt             = {}
+    puerco           = {}
+    teodor-yanev     = {}
   }
 }
 
