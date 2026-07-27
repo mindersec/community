@@ -16,14 +16,16 @@ jobs:
       CONFIG_DIRECTORY: "./config/"
     steps:
       - name: SetupOpenTofu
-        uses: opentofu/setup-opentofu@12f4debbf681675350b6cd1f0ff8ecfbda62027b # v1.0.4
+        uses: opentofu/setup-opentofu@a1320f892987e89d278cc92dc5adc984fb93aca4 # v2.0.2
 
       - name: Checkout code
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Load state from artifacts
         continue-on-error: true # Allow for artifact not existing yet
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: provision-user-state
           path: $CONFIG_DIRECTORY
@@ -31,10 +33,13 @@ jobs:
 
       - name: Generate a token
         id: generate-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
-          app_id: ${{ secrets.USER_MANAGEMENT_APP_ID }}
-          private_key: ${{ secrets.USER_MANAGEMENT_PRIVATE_KEY }}
+          client-id: ${{ secrets.USER_MANAGEMENT_APP_ID }}
+          private-key: ${{ secrets.USER_MANAGEMENT_PRIVATE_KEY }}
+          # These are also set in the App's permissions, but this is more easily reviewable.
+          permission-members: write
+          permission-actions: read
 
       - name: OpenTofu Apply
         id: apply
@@ -51,7 +56,7 @@ jobs:
       # NOTE: we don't encrypt/decrypt the state file, as it only contains
       # (public) github memberships.
       - name: Save state to artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: provision-user-state
           path: $CONFIG_DIRECTORY/terraform.tfstate

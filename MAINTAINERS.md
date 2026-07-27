@@ -84,7 +84,7 @@ As a maintainer, you will have the following responsibilities:
 The current list of maintainers is:
 
 - @evankanderson (Custcodian)
-- @krrish17-byte (Independent)
+- @krrish175-byte (Independent)
 - @dakshhhhh16 (Independent)
 - @JAORMX (Stacklok)
 - @rdimitrov (Stacklok)
