@@ -1,11 +1,12 @@
 locals {
   maintainers = {
-    evankanderson  = { role : "admin" }
-    dakshhhhh16    = { role: "member" }
-    krrish175-byte = { role: "member" }
-    JAORMX         = { role : "admin" }
-    rdimitrov      = { role : "admin" }
-    Vyom-Yadav     = { role : "member" }
+    evankanderson    = { role : "admin" }
+    dakshhhhh16      = { role : "member" }
+    krrish175-byte   = { role : "member" }
+    JAORMX           = { role : "admin" }
+    intelligent-ears = { role : "member" }
+    rdimitrov        = { role : "admin" }
+    Vyom-Yadav       = { role : "member" }
 
     thelinuxfoundation = { role : "admin" }
   }
