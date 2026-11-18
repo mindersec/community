@@ -1,0 +1,129 @@
+version: v1
+release_phase: beta
+type: rule-type
+name: release_tags_immutable
+display_name: Release tags should not be updated after creation
+short_failure_message: Unprotected release tag in repository
+severity:
+  value: medium
+context:
+  provider: github
+description: |
+  Tags are used to record the specific git commit which was used to
+  produce a release.  Repository rulesets can be used to ensure that
+  the mapping from a named tag to a git commit is immutable.
+guidance: |
+  Release tags should be immutable to maintain a reliable history of
+  your software releases. When tags can be moved, it becomes difficult
+  to trace which exact commit was used for a specific release,
+  potentially causing confusion in dependency management and security
+  auditing.
+
+  To protect release tags, configure a repository ruleset that prevents
+  tags from being modified or deleted after creation. See GitHub's
+  documentation on repository rulesets at
+  https://docs.github.com/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets#tag-protection-rules.
+def:
+  in_entity: repository
+  rule_schema:
+    properties: {}
+  ingest:
+    type: rest
+    rest:
+      endpoint: /graphql
+      parse: json
+      method: POST
+      body: |
+        { "query": "query {
+          repository(name:\"{{.Entity.Name}}\", owner:\"{{.Entity.Owner}}\") {
+            rulesets(first: 100) {
+              nodes {
+                id,
+                name,
+                databaseId,
+                target,
+                enforcement,
+                conditions {
+                  refName {exclude, include}
+                },
+                rules(first:100) {
+                  nodes {type}
+                }
+              }
+            }
+          }
+        }"}
+  eval:
+    type: rego
+    rego:
+      type: deny-by-default
+      def: |
+        package minder
+
+        import rego.v1
+
+        default allow := false
+
+        rulesets := input.ingested.data.repository.rulesets.nodes
+
+        # Don't allow updating tags after creation
+        default update_blocked := false
+
+        update_blocked if {
+          some rule
+          rulesets[rule].target == "TAG"
+          rulesets[rule].enforcement == "ACTIVE"
+          rulesets[rule].conditions.refName.include[_] == "refs/tags/v*.*.*"
+          rulesets[rule].rules.nodes[_].type == "UPDATE"
+        }
+
+        # We also need to block deletion, to avoid delete + create to evade update block
+        default delete_blocked := false
+
+        delete_blocked if {
+          some rule
+          rulesets[rule].target == "TAG"
+          rulesets[rule].enforcement == "ACTIVE"
+          rulesets[rule].conditions.refName.include[_] == "refs/tags/v*.*.*"
+          rulesets[rule].rules.nodes[_].type == "DELETION"
+        }
+
+        allow if {
+          update_blocked
+          delete_blocked
+        }
+
+        default output := {"id": ""}
+
+        # Two rules cannot share the same name; if we find a rule with
+        # the target name, we should do an update rather than create
+        output := {"id": ruleId} if {
+          some rule
+          rulesets[rule].name == "Immutable Release Tags"
+          ruleId := rulesets[rule].databaseId
+        }
+
+        message := sprintf("Found %v ruleset for tags", [output])
+  remediate:
+    type: rest
+    rest:
+      method: '{{if .EvalResultOutput.id}}PUT{{else}}POST{{end}}'
+      endpoint: '/repos/{{.Entity.Owner}}/{{.Entity.Name}}/rulesets{{if .EvalResultOutput.id}}/{{.EvalResultOutput.id}}{{end}}'
+      # TODO: include .bypass_actors from a param?
+      body: |
+        {
+          "name": "Immutable Release Tags",
+          "target": "tag",
+          "enforcement": "active",
+          "conditions": {
+            "ref_name": {
+              "include": ["refs/tags/v*.*.*"],
+              "exclude": []
+            }
+          },
+          "rules": [
+            {"type": "update"},
+            {"type": "deletion"},
+            {"type": "non_fast_forward"}
+          ]
+        }
