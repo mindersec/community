@@ -1,0 +1,32 @@
+---
+version: v1
+type: profile
+name: mindersec-supply-chain
+display_name: mindersec Supply Chain Hygiene
+context:
+  provider: github
+# Observe first: evaluation results show up in `minder profile status`, but
+# nothing is changed in the repos and no advisories are opened. Turn
+# remediation on per rule (by moving it to the code-review profile, or a new
+# remediating profile) once the results look right across the org.
+alert: "off"
+remediate: "off"
+repository:
+  # CI: pin third-party actions to commit SHAs, and keep GITHUB_TOKEN
+  # permissions minimal unless a workflow asks for more.
+  - type: actions_check_pinned_tags
+    def: {}
+  - type: actions_check_default_permissions
+    def: {}
+  # Secrets: catch leaked credentials, and block pushes that contain them.
+  - type: secret_scanning
+    def: {}
+  - type: secret_push_protection
+    def: {}
+  # Dependencies: keep them updated (dependabot or renovate config).
+  - type: sca_dependabot
+    def:
+      schedule_interval: weekly
+  # Releases: tags matching v0.0.0 can't be moved or deleted.
+  - type: release_tags_immutable
+    def: {}
