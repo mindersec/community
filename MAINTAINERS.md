@@ -83,11 +83,13 @@ As a maintainer, you will have the following responsibilities:
 
 The current list of maintainers is:
 
-- @evankanderson (Custcodian)
-- @krrish175-byte (Independent)
 - @dakshhhhh16 (Independent)
+- @evankanderson (Custcodian)
+- @intelligent-ears (Independent)
 - @JAORMX (Stacklok)
+- @krrish175-byte (Independent)
 - @rdimitrov (Stacklok)
+- @shreyaabaranwal (Independent)
 - @Vyom-Yadav (Canonical)
 
 Assignment of permissions for these maintainers is managed via Terraform configuration in [the `config` directory](./config/).
