@@ -1,10 +1,11 @@
 locals {
   maintainers = {
-    evankanderson    = { role : "admin" }
     dakshhhhh16      = { role : "member" }
-    krrish175-byte   = { role : "member" }
-    JAORMX           = { role : "admin" }
+    evankanderson    = { role : "admin" }
     intelligent-ears = { role : "member" }
+    JAORMX           = { role : "admin" }
+    krrish175-byte   = { role : "member" }
+    shreyaabaranwal  = { role : "member" }
     rdimitrov        = { role : "admin" }
     Vyom-Yadav       = { role : "member" }
 
@@ -12,23 +13,19 @@ locals {
   }
 
   org_members = {
-    dashtangui       = {}
+    codejasleen      = {}
     DharunMR         = {}
-    dussab           = {}
-    ethomson         = {}
+    drona-gyawali    = {}
     Gitjay11         = {}
     intelligent-ears = {}
     Jaydeep869       = {}
     kazuhidelee      = {}
+    ravindra-RKB     = {}
     sachin9058       = {}
     staceypotter     = {}
-    jhrozek          = {}
+    sourya2704       = {}
     dmjb             = {}
-    eleftherias      = {}
-    lukehinds        = {}
     blkt             = {}
-    puerco           = {}
-    teodor-yanev     = {}
   }
 }
 
@@ -44,20 +41,6 @@ resource "github_membership" "org_members" {
 
   username = each.key
   role     = "member"
-}
-
-# Folks who helped with the transition need a manual import
-import {
-  to = github_membership.org_members["dussab"]
-  id = "mindersec:dussab"
-}
-import {
-  to = github_membership.org_members["ethomson"]
-  id = "mindersec:ethomson"
-}
-import {
-  to = github_membership.org_members["staceypotter"]
-  id = "mindersec:staceypotter"
 }
 
 resource "github_team" "maintainers" {
