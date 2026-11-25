@@ -1,0 +1,162 @@
+---
+version: v1
+release_phase: beta
+type: rule-type
+name: sca_dependabot
+display_name: Enable Dependabot SCA
+short_failure_message: "SCA: Dependabot is not configured"
+severity:
+  value: medium
+context:
+  provider: github
+description: |
+  Verifies that Dependabot is configured to update dependencies
+  for all ecosystems in the repository.
+guidance: |
+  Ensure that Dependabot is configured and enabled for all language
+  ecosystems used in the repository.
+
+  Dependabot enables automated dependency updates for repositories.
+  It is recommended that repositories have some form of automated
+  dependency updates enabled to ensure that vulnerabilities are not
+  introduced into the codebase.
+
+  For more information, see [GitHub's
+  documentation](https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file).
+def:
+  in_entity: repository
+  # Defines the schema for writing a rule with this rule being checked
+  rule_schema:
+    type: object
+    properties:
+      schedule_interval:
+        type: string
+        description: |
+          How often to receive updates from dependabot.  This option covers
+          routine updates; dependabot will create pull requests for security
+          updates when they are available.
+        default: "weekly"
+      max_in_flight:
+        type: integer
+        description: |
+          The maximum number of open pull requests that dependabot will create
+          for a given ecosystem.  This is useful to limit the number of open
+          pull requests that are created at once.  Set to 0 to disable a limit.
+        default: 10
+  ingest:
+    type: git
+    git: {}
+  eval:
+    type: rego
+    rego:
+      type: constraints
+      violation_format: json
+      def: |
+        package minder
+
+        import rego.v1
+
+        default allow := false
+
+        default message := "Dependabot is not configured"
+
+        # If renovate is already configured, we don't need to apply dependabot
+        # See https://docs.renovatebot.com/configuration-options/ for filenames
+        skip if file.exists("renovate.json")
+        skip if file.exists("renovate.json5")
+        skip if file.exists(".github/renovate.json")
+        skip if file.exists(".github/renovate.json5")
+        skip if file.exists(".gitlab/renovate.json")
+        skip if file.exists(".gitlab/renovate.json5")
+        skip if file.exists(".renovaterc")
+        skip if file.exists(".renovaterc.json")
+        skip if file.exists(".renovaterc.json5")
+
+        ecosystems := {
+          "bundler": ["Gemfile"],
+          "cargo": ["Cargo.toml"],
+          "docker": ["Dockerfile"],
+          "github-actions": [".github/workflows/*"],
+          "gomod": ["go.mod"],
+          "gradle": ["build.gradle"],
+          "maven": ["pom.xml"],
+          "npm": ["package.json"],
+          "nuget": ["*.csproj"],
+          "pip": ["requirements.txt", "pyproject.toml"],
+          "uv": ["uv.lock"],
+        }
+
+        # Read the dependabot configuration, if present
+        default config := {"updates": {}}
+
+        config := fileConfig if {
+          file.exists("./.github/dependabot.yml")
+          fileConfig := yaml.unmarshal(file.read("./.github/dependabot.yml"))
+          fileConfig
+        }
+
+        configured_ecosystems := {ecosystem | ecosystem := config.updates[_]["package-ecosystem"]}
+
+        files_in_repo := file.walk(".")
+
+        violations contains {"msg": json.marshal({"ecosystem": ecosystem, "dirs": dirs})} if {
+          some ecosystem, globs in ecosystems
+
+          paths := {dir |
+            # Add a leading "." to allow for simpler glob matching
+            # We also convert \ to / to allow test to run on Windows"
+            path := replace(concat("/", [".", files_in_repo[_]]), "\\", "/")
+            match := globs[_]
+            matched := glob.match(concat("/", ["**", match]), ["/"], path)
+            matched
+
+            # Remove leading "." added at the start to help with glob matching
+
+            dir := trim(regex.replace(path, "/[^/]+$", "/"), ".")
+          }
+
+          # Only consider ecosystem if len(paths) > 0
+          count(paths) > 0
+
+          # If the config does not have an ecosystem entry, then flag it
+          not ecosystem in configured_ecosystems
+
+          # Convert to array for JSON marshalling
+          dirs := [p | p := ecosystem_paths(ecosystem, paths[_])]
+        }
+
+        # GitHub Actions is a special case where the directory is always "/"
+        ecosystem_paths(eco, path) := path if eco != "github-actions"
+        ecosystem_paths(eco, _) := "/" if eco == "github-actions"
+  remediate:
+    type: pull_request
+    pull_request:
+      title: "Add Dependabot configuration for {{.Entity.Name }}"
+      body: |
+        This is a Minder automated pull request.
+        
+        This pull request adds a Dependabot configuration to the repository to handle
+        package updates for multiple ecosystems.  <!-- TODO: add ecosystems here -->
+        
+        For more information, see
+        https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+      contents:
+        - path: .github/dependabot.yml
+          action: replace
+          content: |
+            version: 2
+            updates:
+            {{- $profile := .Profile }}
+            {{- range .EvalResultOutput }}
+            - package-ecosystem: "{{ .ecosystem }}"
+              directories:
+              {{- range .dirs }}
+              - {{ . }}
+              {{ end -}}
+              schedule:
+                interval: "{{ $profile.schedule_interval }}"  # .schedule_interval
+              {{if $profile.max_in_flight -}}
+              open-pull-requests-limit: 10
+              {{- end}}
+            {{ end -}}
+

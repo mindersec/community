@@ -1,0 +1,90 @@
+version: v1
+release_phase: alpha
+type: rule-type
+name: actions_check_default_permissions
+display_name: Ensure GitHub Actions workflows set their permissions
+short_failure_message: GitHub Actions workflows do not explicitly set permissions
+severity:
+  value: medium
+context:
+  provider: github
+description: Alerts on default GitHub Actions permissions
+guidance: |
+  Ensure that GitHub Actions have permissions specified.
+
+  The default permissions for GitHub Actions allow broad access to the
+  repository, including the ability to update repo contents, approve
+  pull requests, and update releases, packages, and deployments.  To
+  limit these permissions, specify permissions explicitly either in
+  the top level of the workflow file, or for each job in the workflow.
+
+  For more information, see [GitHub's
+  documentation](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions).
+def:
+  provider_traits: ["git", "github"]
+  in_entity: repository
+  # Defines the schema for writing a rule with this rule being checked
+  rule_schema:
+    type: object
+    properties: {}
+  # Defines the configuration for ingesting data relevant for the rule
+  ingest:
+    type: git
+    git: {}
+  # Defines the configuration for evaluating data ingested against the given profile
+  # This example checks that in each file there exists either a top-level permissions
+  # block or that each job in the file has its own permissions block.
+  eval:
+    type: rego
+    rego:
+      type: deny-by-default
+      def: |
+        package minder
+
+        import rego.v1
+
+        default allow := false
+
+        # List all workflows
+        workflows := file.ls("./.github/workflows")
+
+        # Read all workflows
+
+        allow if {
+          every filename in workflows {
+            workflowstr := file.read(filename)
+
+            workflow := yaml.unmarshal(workflowstr)
+
+            permissions_ok(workflow)
+          }
+        }
+
+        permissions_ok(workflow) if {
+          count(workflow.permissions) >= 0
+        }
+
+        permissions_ok(workflow) if {
+          every job in workflow.jobs {
+            count(job.permissions) >= 0
+          }
+        }
+
+        # Get the list of workflows that do not have permissions and create the error message
+        missing_permissions_workflows := [workflow_name |
+          filename := workflows[_] # Iterate over each workflow filename
+          workflowstr := file.read(filename)
+          workflow := yaml.unmarshal(workflowstr)
+
+          not permissions_ok(workflow)
+          workflow_name = workflow.name
+        ]
+
+        # Construct the final message
+        message := sprintf("Workflows %s do not explicitly set their permissions", [concat(",", missing_permissions_workflows)])
+  # We don't have a remediation method in place yet.
+
+  # Defines the configuration for alerting on the rule
+  alert:
+    type: security_advisory
+    security_advisory: {}
