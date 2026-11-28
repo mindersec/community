@@ -18,6 +18,12 @@ repository:
     def: {}
   - type: actions_check_default_permissions
     def: {}
+  # Repository setting: GITHUB_TOKEN defaults to read-only, and Actions
+  # can't approve pull requests.
+  - type: default_workflow_permissions
+    def:
+      default_workflow_permissions: read
+      can_approve_pull_request_reviews: false
   # Secrets: catch leaked credentials, and block pushes that contain them.
   - type: secret_scanning
     def: {}
